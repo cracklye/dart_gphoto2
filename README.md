@@ -12,6 +12,34 @@ https://github.com/angryelectron/libgphoto2-jna/blob/master/src/com/angryelectro
 
 It is very much a work in progress at the moment. 
 
+# GPhoto2 
+https://github.com/gphoto/gphoto2/blob/master/gphoto2/shell.c
+https://github.com/gphoto/gphoto2/blob/master/gphoto2/gphoto2-cmd-capture.c
+https://github.com/gphoto/gphoto2/tree/master/gphoto2
+
+sudo gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
+gphoto2 --auto-detect 
+ gphoto2 --version
+  gphoto2 --list-config
+
+
+$ gphoto2 --set-config liveviewsize="0"         # no error, but camera mirror flips up and back down
+$ gphoto2 --set-config liveviewsize="Large"     # same
+$ gphoto2 --set-config liveviewsize="1"         # same
+$ gphoto2 --set-config liveviewsize="Medium"    # same
+$ gphoto2 --set-config liveviewsize="2"         # same
+$ gphoto2 --set-config liveviewsize="Small"     # same
+
+$ gphoto2 --get-config liveviewsize # despite no errors, the setting value doesn't change
+Label: Live View Size                                                          
+Readonly: 0
+Type: RADIO
+Current: val 0
+Choice: 0 Large
+Choice: 1 Medium
+Choice: 2 Small
+
+
 
 
 # Developing
