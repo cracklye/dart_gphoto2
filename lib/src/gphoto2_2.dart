@@ -12,8 +12,25 @@ import 'package:ffi/ffi.dart';
 //https://github.com/angryelectron/libgphoto2-jna/blob/master/src/com/angryelectron/gphoto2/GPhoto2.java
 //https://github.com/gphoto/libgphoto2/blob/master/examples/sample-tether.c
 
+   String convertCArrayToString(Array<Char> cArray) {
+    final dartString = <int>[];
+    for (var i = 0; i < 256; i++) {
+      final char = cArray[i];
+      if (char == 0) break;
+      dartString.add(char);
+    }
+    return String.fromCharCodes(dartString);
+  
+}
 
+ String convertCharArrayPointerToString(Pointer<Char> text){
+  
+return text.cast<Uint8>().toString();
+
+
+}
 class GPhoto2 {
+
   late DynamicLibrary gphoto2;
   late Pointer<GPContext> context;
   Pointer<Pointer<Camera>>? camera;
@@ -21,6 +38,11 @@ class GPhoto2 {
   String? error;
   String? message;
   bool _waitForCaptureEvent = false;
+
+//   final ffi.Pointer<ffi.UnsignedChar> ptr = ...;  // for binary data, unsigned char is recommended.
+// final Uint8List binaryData = ptr.cast<ffi.Uint8>().asTypedList();
+  // Private helper function to convert a C-style array to a Dart string
+
 
   GPhoto2([String pathToDll= 'libgphoto2.so']) {
     ///home/rock/.local/include/Gphoto2
@@ -32,19 +54,65 @@ class GPhoto2 {
     _instance = LibGPhoto2(gphoto2);
     context = _instance.gp_context_new();
     Pointer<Pointer<Void>> handle = calloc();
+    const int? o  = -4424; 
 
     //Pointer<NativeFunction<UnsignedInt Function(Pointer<_GPContext>, Pointer<Void>)>> func,
 
-    //  _instance.gp_context_set_cancel_func(context, Pointer.fromFunction(handleCancel), handle.value);
-    //  _instance.gp_context_set_message_func(context, func, handle.value);
+    // _instance.gp_context_set_cancel_func(context, Pointer.fromFunction(handleCancel2,o), handle.value);
+        late final NativeCallable<GPContextMessageFuncFunction> _myCallback =
+        NativeCallable<GPContextMessageFuncFunction>.isolateLocal(handleMessage);
+        
+    _instance.gp_context_set_message_func(context,  _myCallback.nativeFunction, handle.value);
+    _instance.gp_context_set_error_func(context,  _myCallback.nativeFunction, handle.value);
+    _instance.gp_context_set_status_func(context,  _myCallback.nativeFunction, handle.value);
+
+        //     late final NativeCallable<GPContextMessageFuncFunction> progressFun =
+        // NativeCallable<GPContextMessageFuncFunction>.isolateLocal(handleMessage);
+        
+    // _instance.gp_context_set_progress_funcs(context,  progressFun.nativeFunction, handle.value);
+
 
     // Set error and message callbacks here using FFI.
   }
   //https://groups.google.com/a/dartlang.org/g/misc/c/-w0zIbk8YhM?pli=1
 
-  // UnsignedInt handleCancel(Pointer<GPContext> context, Pointer<Void> val){
+  int handleCancel(GPContext context){
+return 0; 
+  }
+  //       ffi.Pointer<GPContext> context,
+  //     ffi.Pointer<ffi.Char> text,
+  //     ffi.Pointer<ffi.Void> data,
+  // GPContextMessageFuncFunction
+    int handleMessage(
+      Pointer<GPContext> context,
+      Pointer<Char> text,
+      Pointer<Void> data,
+    ){
+      print("Message:  ${convertCharArrayPointerToString(text)}");
+return 0;
+    }
 
-  // }
+      int handleProgress(
+      Pointer<GPContext> context,
+      Pointer<Char> text,
+      Pointer<Void> data,
+    ){
+      print("Message:  ${convertCharArrayPointerToString(text)}");
+return 0;
+    }
+    int handleCancel2(
+      Pointer<GPContext> context,
+      Pointer<Void> data,
+    ){
+      print("Exception $data");
+return 0;
+    }
+// GPContextCancelFuncFunction
+// typedef GPContextCancelFuncFunction =
+//     ffi.UnsignedInt Function(
+//       ffi.Pointer<GPContext> context,
+//       ffi.Pointer<ffi.Void> data,
+//     );
 
   Future<void> close() async {
     if (camera != null) {
@@ -292,9 +360,9 @@ class GPhoto2 {
         // IntBuffer eventType = IntBuffer.allocate(1);
         // CameraFilePath path = CameraFilePath();
         // PointerByReference ref = new PointerByReference(path.getPointer());
-Pointer<CameraFilePath> path = calloc();
-Pointer<Pointer<Void>> ref = calloc();
-Pointer<UnsignedInt> eventType = calloc();
+        Pointer<CameraFilePath> path = calloc();
+        Pointer<Pointer<Void>> ref = calloc();
+        Pointer<UnsignedInt> eventType = calloc();
         /*
          * need to loop, othewise GP_EVENT_UNKNOWN is almost always returned
          */
@@ -331,7 +399,7 @@ Pointer<UnsignedInt> eventType = calloc();
     /// @param value The value of the parameter.
     /// @
      void setConfig(String param, String value)  {
-        GPhoto2Config config =  GPhoto2Config(this);
+        GPhoto2Config config =  GPhoto2Config(_instance,this);
         config.readConfig();
         config.setParameter(param, value);
         config.writeConfig();
@@ -346,7 +414,7 @@ Pointer<UnsignedInt> eventType = calloc();
     /// strings.
     /// @ if the parameter cannot be read.
      String getConfig(String param)  {
-        GPhoto2Config config =  GPhoto2Config(this);
+        GPhoto2Config config =  GPhoto2Config(_instance,this);
         config.readConfig();
         String value = config.getParameter(param);
         return value;
@@ -409,19 +477,7 @@ Pointer<UnsignedInt> eventType = calloc();
     }
     return cameraFilePath.ref;
   }
-//   final ffi.Pointer<ffi.UnsignedChar> ptr = ...;  // for binary data, unsigned char is recommended.
-// final Uint8List binaryData = ptr.cast<ffi.Uint8>().asTypedList();
-  // Private helper function to convert a C-style array to a Dart string
-  String convertCArrayToString(Array<Char> cArray) {
-    final dartString = <int>[];
-    for (var i = 0; i < 256; i++) {
-      final char = cArray[i];
-      if (char == 0) break;
-      dartString.add(char);
-    }
-    return String.fromCharCodes(dartString);
-  
-}
+
 
 
    /// Save image to disk in current directory. TODO: allow path and filename to
@@ -436,6 +492,10 @@ Pointer<UnsignedInt> eventType = calloc();
         String name = convertCArrayToString(path.name);
  final namePointer = name.toNativeUtf8().cast<Char>();
  final folderPointer = folder.toNativeUtf8().cast<Char>();
+
+ final destinationPath  = "/tmp/dart_gphoto2/$name".toNativeUtf8().cast<Char>();
+
+
 print("Folder=$folder");
 print("Name=$name");
 
@@ -454,18 +514,23 @@ print("Name=$name");
         if (rc != GP_OK) {
             throw Exception("gp_file_new failed with code $rc"  );
         }
-        Pointer<Pointer<CameraFile>> cameraFilep = calloc();
-        Pointer<CameraFile> cameraFile = cameraFilep.value;
+
+        // Pointer<Pointer<CameraFile>> cameraFilep = calloc();
+        Pointer<CameraFile> cameraFile = ref.value;// cameraFilep.value;
+
+          
 
 
         /* point the CameraFile object at the CameraFilePath */
+
         rc = _instance.gp_camera_file_get(camera!.value, folderPointer, namePointer, CameraFileType.GP_FILE_TYPE_NORMAL, cameraFile, context);
         if (rc != GP_OK) {
             throw Exception("gp_camera_file_get failed with code $rc" );
         }
 
+
         /* save CameraFile to disk */
-        rc = _instance.gp_file_save(cameraFile, namePointer);
+        rc = _instance.gp_file_save(cameraFile, destinationPath);
         _instance.gp_file_free(cameraFile);
         if (rc != GP_OK) {
             throw Exception("gp_file_save failed with code $rc" );

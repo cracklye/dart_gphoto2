@@ -1,3 +1,19 @@
+# dart_gphoto2
+
+
+
+//https://github.com/angryelectron/libgphoto2-jna/blob/master/src/com/angryelectron/gphoto2/GPhoto2.java
+//https://github.com/angryelectron/libgphoto2-jna/blob/master/src/com/angryelectron/gphoto2/GPhoto2.java
+//https://github.com/gphoto/libgphoto2/blob/master/examples/sample-tether.c
+
+This package is a port of the java libgphoto-jna project available here: 
+https://github.com/angryelectron/libgphoto2-jna/blob/master/src/com/angryelectron/gphoto2/GPhoto2.java
+
+
+It is very much a work in progress at the moment. 
+
+
+
 # Developing
 When developing launch this project in a dev container which will allow for building and running in linux. (The only platform really libgphoto2 works on)  You can then launch your linux device with a camera attached and do the following: 
 
@@ -6,7 +22,7 @@ Running this on the devContainer will sync the dart_gphoto folder to the remote 
 ```
  cd /workspaces/flutter_gphoto
  rsync -av dart_gphoto2 rock@rockpi-4b:/tmp/
- ``
+ ```
 
 
 On the remote device you can run tests using a command such as the follownig; 

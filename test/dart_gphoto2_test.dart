@@ -30,6 +30,7 @@ void main() {
       GPhoto2 camera = GPhoto2();
       try {
         camera.open();
+
         camera.capture();
       } finally {
         camera.close();
@@ -50,6 +51,7 @@ void main() {
       try {
         camera.open();
         var image = await camera.captureAndDownload(true);
+        print("Have iamge ${image.absolute} exists: ${image.existsSync()}");
         assert(image.existsSync(), true);
         image.deleteSync();
       } finally {
@@ -62,6 +64,7 @@ void main() {
         camera.open();
         camera.waitForCaptureEvent(true);
         var image = await camera.captureAndDownload(true);
+        print("Have iamge ${image.absolute}");
         assert(image.existsSync(), true);
         image.deleteSync();
       } finally {
@@ -75,6 +78,7 @@ void main() {
         camera.setConfig("burstnumber", "5");
         var images = camera.burstAndDownload(true);
         for (File image in images) {
+          print("Have iamge ${image.absolute}");
           assert(image.existsSync(), true);
           image.deleteSync();
         }

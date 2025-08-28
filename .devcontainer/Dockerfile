@@ -44,6 +44,7 @@ RUN apt install -y libtool
 RUN apt install -y libexif-dev
 # RUN apt install -y meson
 RUN apt install -y locales
+RUN apt install -y rsync
 
 # Required for FFIGen
 RUN apt-get install -y libclang-dev
