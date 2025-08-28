@@ -1,0 +1,35 @@
+name: dart_gphoto2
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.8.1
+
+# Add regular dependencies here.
+dependencies:
+  # path: ^1.8.0
+  ffi:
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.24.0
+  ffigen:
+
+
+
+
+ffigen:
+  name: LibGPhoto2
+  description: Wrapper on the Gphoto2 libraries
+  output: lib/src/generated/libgphoto2_bindings.dart
+  headers:
+    entry-points:
+      - 'libgphoto2/gphoto2/gphoto2.h'
+    # include-directives: 
+    #   - 'libgphoto2/gphoto2/**.h'
+  #     - 'libgphoto2/libgphoto2_port/gphoto2/*.h'
+  # #     - 'libgphoto2/gphoto2/**.h'
+  compiler-opts:
+    - '-I./libgphoto2'
+    - '-I./libgphoto2/libgphoto2_port'
+
