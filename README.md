@@ -52,7 +52,9 @@ Running this on the devContainer will sync the dart_gphoto folder to the remote 
 ```
  cd /workspaces/flutter_gphoto
  rsync -av dart_gphoto2 rock@rockpi-4b:/tmp/
+
  ```
+https://stackoverflow.com/questions/34575374/how-to-use-fswatch-and-rsync-to-automatically-sync-directories
 
 
 On the remote device you can run tests using a command such as the follownig; 
