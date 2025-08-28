@@ -13,9 +13,11 @@ https://github.com/angryelectron/libgphoto2-jna/blob/master/src/com/angryelectro
 It is very much a work in progress at the moment. 
 
 # GPhoto2 
-https://github.com/gphoto/gphoto2/blob/master/gphoto2/shell.c
-https://github.com/gphoto/gphoto2/blob/master/gphoto2/gphoto2-cmd-capture.c
-https://github.com/gphoto/gphoto2/tree/master/gphoto2
+- https://github.com/gphoto/gphoto2/blob/master/gphoto2/shell.c
+- https://github.com/gphoto/gphoto2/blob/master/gphoto2/gphoto2-cmd-capture.c
+- https://github.com/gphoto/gphoto2/tree/master/gphoto2
+- https://github.com/gphoto/gphoto2/blob/master/gphoto2/actions.c
+
 
 sudo gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
 gphoto2 --auto-detect 
